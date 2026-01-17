@@ -1,0 +1,119 @@
+.hero-section {
+    position: relative;
+    min-height: 70vh;
+    overflow: hidden;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.shooting-star-cyan {
+    position: absolute;
+    width: 2px;
+    height: 100px;
+    background: linear-gradient(to right,
+            rgba(74, 211, 229, 1),
+            rgba(74, 211, 229, 0));
+    border-radius: 50%;
+    opacity: 0;
+    animation: shooting 3s ease-in-out infinite;
+    will-change: transform, opacity;
+    pointer-events: none;
+}
+
+.shooting-star-pink {
+    position: absolute;
+    width: 2px;
+    height: 100px;
+    background: linear-gradient(to right,
+            rgba(255, 93, 162, 1),
+            rgba(255, 93, 162, 0));
+    border-radius: 50%;
+    opacity: 0;
+    animation: shooting 3s ease-in-out infinite;
+    will-change: transform, opacity;
+    pointer-events: none;
+}
+
+@keyframes shooting {
+    0% {
+        transform: translateX(0) translateY(0) rotate(45deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-500px) translateY(500px) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+.shooting-star-cyan:nth-child(1) {
+    top: 0;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.shooting-star-pink:nth-child(2) {
+    top: 5%;
+    left: 50%;
+    animation-delay: 0.5s;
+}
+
+.shooting-star-cyan:nth-child(3) {
+    top: 5%;
+    left: 70%;
+    animation-delay: 1s;
+}
+
+.shooting-star-pink:nth-child(4) {
+    top: 10%;
+    left: 80%;
+    animation-delay: 1.5s;
+}
+
+.shooting-star-cyan:nth-child(5) {
+    top: 15%;
+    left: 90%;
+    animation-delay: 2s;
+}
+
+.shooting-star-pink:nth-child(6) {
+    top: 20%;
+    left: 30%;
+    animation-delay: 2.5s;
+}
+
+.shooting-star-cyan:nth-child(7) {
+    top: 50%;
+    left: 60%;
+    animation-delay: 3s;
+}
+
+.shooting-star-pink:nth-child(8) {
+    top: 70%;
+    left: 85%;
+    animation-delay: 3.5s;
+}
+
+.shooting-star-cyan:nth-child(9) {
+    top: 80%;
+    left: 95%;
+    animation-delay: 4s;
+}
+
+.shooting-star-pink:nth-child(10) {
+    top: 90%;
+    left: 20%;
+    animation-delay: 4.5s;
+}
+
+/* Motion reduce support */
+@media (prefers-reduced-motion: reduce) {
+    .shooting-star-cyan,
+    .shooting-star-pink {
+        animation: none;
+    }
+}

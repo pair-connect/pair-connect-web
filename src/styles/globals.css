@@ -1,0 +1,718 @@
+/**
+ * ============================================
+ * DESIGN SYSTEM - GLOBAL STYLES
+ * ============================================
+ * 
+ * Este archivo contiene el sistema de diseño tokenizado de la marca.
+ * Prioridad: Tailwind CSS > CSS personalizado
+ * 
+ * Estructura:
+ * 1. Tokens de marca (colores, tipografía, espaciado)
+ * 2. Configuración de Tailwind (@theme)
+ * 3. Estilos base mínimos
+ * 4. Utilidades específicas que no pueden hacerse con Tailwind
+ * 
+ * NOTA: Las fuentes se importan en index.css para cumplir con la regla
+ * de que @import debe preceder a todas las demás declaraciones.
+ */
+
+/* ============================================
+  DESIGN TOKENS - BRAND COLORS
+  ============================================ */
+@layer base {
+  :root {
+    /* ============================================
+  COLOR PALETTE - NEON FUTURISTIC
+  ============================================ */
+
+    /* Primary Brand Colors - Cyan */
+    --color-cyan: #4ad3e5;
+    --color-cyan-light: #65dde6;
+    --color-cyan-dark: #069a9a;
+
+    /* Secondary Brand Colors - Magenta */
+    --color-magenta: #ff5da2;
+    --color-magenta-light: #ff7ab5;
+    --color-magenta-dark: #862552;
+
+    /* Accent Colors - Purple */
+    --color-purple: #a855f7;
+    --color-purple-alt: #a16ee4;
+
+    /* ============================================
+    SURFACE COLORS - DARK THEME
+    ============================================ */
+    --color-dark-bg: #0b0c10;
+    --color-dark-surface: #14181a;
+    --color-dark-card: #13161d;
+    --color-dark-card-darker: #0f1215;
+    --color-dark-border: #3f444f;
+
+    /* ============================================
+    NEUTRAL COLORS
+    ============================================ */
+    --color-light: #f1f1f1;
+    --color-light-secondary: #f2f3f2;
+    --color-gray-dark: #414b58;
+    --color-gray-blue: #8fa6bc;
+
+    /* ============================================
+    SEMANTIC COLORS (HSL for Tailwind)
+    ============================================ */
+    --color-background: 207 17% 8%;
+    --color-foreground: 96 5% 95%;
+    --color-card: 220 20% 20%;
+    --color-card-foreground: 96 5% 95%;
+    --color-popover: 207 17% 8%;
+    --color-popover-foreground: 96 5% 95%;
+
+    /* Primary */
+    --color-primary: 184 72% 65%;
+    --color-primary-foreground: 207 17% 8%;
+    --color-primary-hover: 184 72% 45%;
+
+    /* Secondary */
+    --color-secondary: 334 100% 66%;
+    --color-secondary-foreground: 222.2 84% 4.9%;
+
+    /* Muted */
+    --color-muted: 214 15% 30%;
+    --color-muted-foreground: 210 25% 65%;
+
+    /* Accent */
+    --color-accent: 214 15% 30%;
+    --color-accent-foreground: 96 5% 95%;
+
+    /* Destructive */
+    --color-destructive: 0 62% 50%;
+    --color-destructive-foreground: 0 0% 100%;
+
+    /* Success */
+    --color-success: 145 70% 40%;
+    --color-success-foreground: 0 0% 100%;
+
+    /* Border & Input */
+    --color-border: 214 15% 30%;
+    --color-input: 214 15% 30%;
+    --color-ring: 207 17% 8%;
+
+    /* Chart Colors */
+    --color-chart-1: 220 70% 50%;
+    --color-chart-2: 160 60% 45%;
+    --color-chart-3: 30 80% 55%;
+    --color-chart-4: 280 65% 60%;
+    --color-chart-5: 340 75% 55%;
+
+    /* ============================================
+    GRADIENTS
+    ============================================ */
+    --gradient-primary: linear-gradient(
+      to right,
+      rgba(8, 223, 223, 1),
+      rgba(255, 93, 162, 1)
+    );
+
+    --gradient-secondary: linear-gradient(
+      to right,
+      rgba(240, 92, 186, 1),
+      rgba(24, 224, 234, 1),
+      rgba(239, 64, 181, 1)
+    );
+
+    --gradient-tertiary: linear-gradient(
+      to right,
+      rgba(255, 93, 162, 1),
+      rgba(147, 112, 219, 1)
+    );
+
+    --gradient-quaternary: linear-gradient(
+      to right,
+      rgb(255, 85, 122),
+      rgba(255, 78, 205, 1),
+      rgba(93, 207, 255, 1)
+    );
+
+    /* ============================================
+    SHADOWS
+    ============================================ */
+    --shadow-custom: 0px 0px 10px 12px rgba(12, 183, 230, 0.127);
+    --shadow-special: 0 4px 12px 0 rgb(18, 174, 194);
+    --shadow-white: 0 4px 12px 0 rgba(147, 112, 219, 1);
+
+    /* ============================================
+    BACKGROUND PATTERNS
+    ============================================ */
+    /* Dark mode background colors */
+    --bg-base-dark: #0b0c10;
+
+    /* Light mode background colors */
+    --bg-base-light: #fafafa;
+
+    /* ============================================
+    TYPOGRAPHY
+    ============================================ */
+    --font-family-base: "Source Code Pro", monospace;
+    --font-family-sans: "Poppins", sans-serif;
+    --font-size-base: 16px;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* ============================================
+    SPACING & LAYOUT
+    ============================================ */
+    /* Border Radius */
+    --radius-base: 0.5rem;
+    --radius-sm: calc(var(--radius-base) - 4px);
+    --radius-md: calc(var(--radius-base) - 2px);
+    --radius-lg: var(--radius-base);
+    --radius-xl: calc(var(--radius-base) + 4px);
+
+    /* Section Spacing - Estándares globales */
+    --spacing-section-padding-x: 1rem; /* 16px - padding horizontal estándar */
+    --spacing-section-padding-y: 2rem; /* 32px - padding vertical estándar */
+    --spacing-section-padding-y-large: 3rem; /* 48px - padding vertical para páginas destacadas */
+
+    /* ============================================
+    EFFECTS
+    ============================================ */
+    --mouse-effect-color: 184 72% 45%;
+  }
+
+  /* ============================================
+    LIGHT MODE OVERRIDES
+    Solo sobrescribe las variables necesarias para light mode
+    ============================================ */
+  .light {
+    /* Surface Colors - Light Mode */
+    --color-dark-bg: #fafafa;
+    --color-dark-surface: #f5f5f5;
+    --color-dark-card: #E4E7EB;
+    --color-dark-card-darker: #f0f0f0;
+    --color-dark-border: #e0e0e0;
+
+    /* Neutral Colors - Light Mode */
+    --color-light: #020817;
+    --color-light-secondary: #1a1a1a;
+    --color-gray-dark: #666666;
+    --color-gray-blue: #8fa6bc;
+
+    /* Semantic Colors - Light Mode (HSL for Tailwind) */
+    --color-background: 240 5% 96%;
+    --color-foreground: 220 100% 4%;
+    --color-card: 228 14% 93%;
+    --color-card-foreground: 220 100% 4%;
+    --color-popover: 0 0% 100%;
+    --color-popover-foreground: 220 100% 4%;
+
+    /* Primary - Light Mode */
+    --color-primary: 184 72% 65%;
+    --color-primary-foreground: 220 100% 4%;
+    --color-primary-hover: 184 72% 45%;
+
+    /* Secondary - Light Mode */
+    --color-secondary: 334 100% 66%;
+    --color-secondary-foreground: 220 100% 4%;
+
+    /* Muted - Light Mode */
+    --color-muted: 214 15% 85%;
+    --color-muted-foreground: 210 25% 45%;
+
+    /* Accent - Light Mode */
+    --color-accent: 214 15% 85%;
+    --color-accent-foreground: 220 100% 4%;
+
+    /* Destructive - Light Mode */
+    --color-destructive: 0 80% 60%;
+    --color-destructive-foreground: 0 0% 100%;
+
+    /* Success - Light Mode */
+    --color-success: 145 63% 49%;
+    --color-success-foreground: 0 0% 100%;
+
+    /* Border & Input - Light Mode */
+    --color-border: 214.3 31.8% 91.4%;
+    --color-input: 214.3 31.8% 91.4%;
+    --color-ring: 220 100% 4%;
+
+    /* Background Patterns - Light Mode */
+    --bg-base-dark: #fafafa;
+    --bg-base-light: #fafafa;
+  }
+}
+
+/* ============================================
+  TAILWIND THEME CONFIGURATION
+  ============================================ */
+@theme inline {
+  /* Brand Colors */
+  --color-cyan: var(--color-cyan);
+  --color-cyan-light: var(--color-cyan-light);
+  --color-cyan-dark: var(--color-cyan-dark);
+  --color-magenta: var(--color-magenta);
+  --color-magenta-light: var(--color-magenta-light);
+  --color-magenta-dark: var(--color-magenta-dark);
+  --color-purple: var(--color-purple);
+  --color-purple-alt: var(--color-purple-alt);
+
+  /* Surface Colors */
+  --color-dark-bg: var(--color-dark-bg);
+  --color-dark-surface: var(--color-dark-surface);
+  --color-dark-card: var(--color-dark-card);
+  --color-dark-card-darker: var(--color-dark-card-darker);
+  --color-dark-border: var(--color-dark-border);
+
+  /* Neutral Colors */
+  --color-light: var(--color-light);
+  --color-light-secondary: var(--color-light-secondary);
+  --color-gray-dark: var(--color-gray-dark);
+  --color-gray-blue: var(--color-gray-blue);
+
+  /* Semantic Colors (HSL format for Tailwind) */
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-popover: var(--color-popover);
+  --color-popover-foreground: var(--color-popover-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+  --color-chart-1: var(--color-chart-1);
+  --color-chart-2: var(--color-chart-2);
+  --color-chart-3: var(--color-chart-3);
+  --color-chart-4: var(--color-chart-4);
+  --color-chart-5: var(--color-chart-5);
+
+  /* Border Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  /* Font Families */
+  /* font-sans debe usar Source Code Pro (la fuente base del body) */
+  --font-sans: var(--font-family-base);
+  /* font-poppins para títulos importantes */
+  --font-poppins: var(--font-family-sans);
+}
+
+/* ============================================
+  BASE STYLES
+  ============================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-size: var(--font-size-base);
+    color-scheme: dark light;
+  }
+
+  html,
+  body,
+  #root {
+    @apply min-h-screen;
+  }
+
+  body {
+    /* Base background color - Dark mode default */
+    @apply bg-[var(--bg-base-dark)] text-foreground antialiased font-[var(--font-family-base)];
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Light mode background - Applied when html has .light class */
+  html.light {
+    color-scheme: light;
+  }
+
+  html.light body {
+    @apply bg-[var(--bg-base-light)];
+    color: var(--color-light);
+  }
+
+  #root {
+    @apply flex flex-col;
+  }
+}
+
+/* ============================================
+  UTILITY CLASSES
+  Solo clases que NO pueden hacerse con Tailwind
+  ============================================ */
+
+/* Gradient Text Effects */
+@layer utilities {
+  .gradient-text {
+    background-image: var(--gradient-primary);
+    background-size: 100% auto;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transition: background-size 0.5s ease, background-position 0.5s ease;
+  }
+
+  .gradient-text:hover {
+    background-size: 200% auto;
+    animation: gradientMove 3s ease-in-out infinite;
+    will-change: background-size, background-position;
+  }
+
+  .gradient-text-secondary {
+    background-image: var(--gradient-secondary);
+    background-size: 100% auto;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gradient-text-tertiary {
+    background-image: var(--gradient-tertiary);
+    background-size: 100% auto;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gradient-text-quaternary {
+    background-image: var(--gradient-quaternary);
+    background-size: 100% auto;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .gradient3-text {
+    background-image: var(--gradient-primary);
+    background-size: 100% auto;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Neon Border Effects (complejo, requiere CSS) */
+@layer utilities {
+  .neon-border {
+    position: relative;
+    z-index: 10;
+    padding: 2rem;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(var(--color-dark-bg), var(--color-dark-bg))
+        padding-box,
+      linear-gradient(90deg, rgba(8, 223, 223, 1), rgba(255, 93, 162, 1))
+        border-box;
+    border: 2px solid transparent;
+    box-shadow: 0 0 10px rgba(8, 223, 223, 0.7), 0 0 20px rgba(8, 223, 223, 0.6),
+      0 0 30px rgba(8, 223, 223, 0.5), 0 0 20px rgba(240, 92, 186, 0.4),
+      0 0 30px rgba(24, 224, 234, 0.3), 0 0 40px rgba(239, 64, 181, 0.2);
+    backdrop-filter: blur(10px);
+    transition: box-shadow 1s ease-in-out;
+  }
+
+  .neon-border:hover {
+    box-shadow: 0 0 25px rgba(255, 93, 162, 1), 0 0 50px rgba(255, 93, 162, 0.9),
+      0 0 60px rgba(255, 93, 162, 0.8);
+  }
+
+  .neon-border-alt {
+    position: relative;
+    z-index: 10;
+    padding: 2rem;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(var(--color-dark-bg), var(--color-dark-bg))
+        padding-box,
+      linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(0, 255, 255, 1))
+        border-box;
+    border: 2px solid transparent;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.7),
+      0 0 20px rgba(193, 59, 177, 0.6), 0 0 30px rgba(255, 78, 205, 0.5);
+    backdrop-filter: blur(10px);
+    transition: box-shadow 1s ease-in-out;
+  }
+
+  .neon-border-alt:hover {
+    box-shadow: 0 0 25px rgba(255, 78, 205, 1), 0 0 50px rgba(34, 214, 199, 0.9),
+      0 0 60px rgba(0, 229, 255, 0.8);
+  }
+
+  .neon-border2 {
+    position: relative;
+    z-index: 10;
+    padding: 2rem;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(var(--color-dark-bg), var(--color-dark-bg))
+        padding-box,
+      linear-gradient(90deg, rgba(8, 223, 223, 1), rgba(255, 93, 162, 1))
+        border-box;
+    border: 2px solid transparent;
+    box-shadow: 0 0 10px rgba(8, 223, 223, 0.7), 0 0 20px rgba(8, 223, 223, 0.6),
+      0 0 30px rgba(8, 223, 223, 0.5), 0 0 20px rgba(240, 92, 186, 0.4),
+      0 0 30px rgba(24, 224, 234, 0.3), 0 0 40px rgba(239, 64, 181, 0.2);
+    backdrop-filter: blur(10px);
+    transition: box-shadow 1s ease-in-out;
+  }
+
+  .bg-gradient3 {
+    background: linear-gradient(90deg, rgba(8, 223, 223, 1), rgba(255, 93, 162, 1));
+  }
+}
+
+/* Calendar Gradient Borders (específico para calendario) */
+@layer utilities {
+  .border-gradient-all {
+    border-image: linear-gradient(135deg, #ff5da2 0%, #a855f7 50%, #4ad3e5 100%)
+      1;
+  }
+
+  .border-gradient-fb {
+    border-image: linear-gradient(135deg, #ff5da2 0%, #a855f7 100%) 1;
+  }
+
+  .border-gradient-ff {
+    border-image: linear-gradient(135deg, #ff5da2 0%, #4ad3e5 100%) 1;
+  }
+
+  .border-gradient-bf {
+    border-image: linear-gradient(135deg, #a855f7 0%, #4ad3e5 100%) 1;
+  }
+}
+
+/* Mouse Border Glow Effect (solo en el borde) */
+@layer utilities {
+  .mouse-border-effect {
+    position: relative;
+    border: 1px solid #515d53;
+    background: transparent;
+  }
+
+  .mouse-border-effect::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: radial-gradient(
+      100px circle at var(--mouse-x) var(--mouse-y),
+      rgba(74, 211, 229, 1) 0%,
+      rgba(74, 211, 229, 0.7) 25%,
+      transparent 55%
+    );
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    transition: background 0.1s ease-out;
+    z-index: 0;
+    opacity: 0;
+  }
+
+  .mouse-border-effect:hover::before {
+    opacity: 1;
+  }
+
+  .card-with-light-effect {
+    position: relative;
+    background-color: hsl(var(--background));
+    border-radius: var(--radius-base);
+    z-index: 1;
+  }
+}
+
+/* ============================================
+  ANIMATIONS
+  ============================================ */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(74, 211, 229, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(74, 211, 229, 0.8);
+  }
+}
+
+@keyframes pulseEffect {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes breakEffect {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5) rotate(20deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes restoreEffect {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation Utility Classes */
+@layer utilities {
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  .animate-pulse-effect {
+    animation: pulseEffect 1.5s ease-in-out infinite;
+  }
+
+  .animate-break {
+    animation: breakEffect 0.5s ease forwards;
+  }
+
+  .animate-restore {
+    animation: restoreEffect 0.5s ease forwards;
+  }
+
+  .slow-bounce {
+    animation: bounce 2s infinite;
+  }
+}
+
+/* Bounce Animation (for slow-bounce) */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Custom Scrollbar Styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-cyan) var(--bg-base-dark);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--bg-base-dark);
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-cyan);
+  border-radius: 4px;
+  border: 2px solid var(--bg-base-dark);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan-light);
+}
+
+/* ============================================
+  VIEW TRANSITIONS API - THEME TOGGLE ANIMATION
+  ============================================ */
+
+/* Animation timing function for smooth expo-out */
+:root {
+  --expo-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Circle blur top-left animation for theme toggle */
+::view-transition-group(root) {
+  animation-timing-function: var(--expo-out);
+  animation-duration: 1.2s;
+}
+
+::view-transition-new(root) {
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="3"/></filter></defs><circle cx="0" cy="0" r="18" fill="white" filter="url(%23blur)"/></svg>') top left / 0 no-repeat;
+  mask-origin: content-box;
+  animation: scale 1.2s var(--expo-out);
+  animation-fill-mode: both;
+  transform-origin: top left;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: scale 1.2s var(--expo-out);
+  animation-fill-mode: both;
+  transform-origin: top left;
+  z-index: -1;
+}
+
+@keyframes scale {
+  from {
+    mask-size: 0;
+  }
+  to {
+    mask-size: 400vmax;
+  }
+}

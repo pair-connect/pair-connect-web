@@ -1,0 +1,22 @@
+/**
+ * ============================================
+ * MAIN STYLES ENTRY POINT
+ * ============================================
+ * 
+ * Este es el archivo de entrada principal para los estilos.
+ * Tailwind v4 procesará este archivo y generará el CSS compilado.
+ * 
+ * Orden de importación:
+ * 1. Fuentes (debe ir primero)
+ * 2. Tailwind CSS (utilidades base)
+ * 3. Design System (tokens y estilos globales)
+ */
+
+/* Import Google Fonts - DEBE ir antes de todo */
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+/* Import Tailwind CSS */
+@import "tailwindcss";
+
+/* Import Design System */
+@import "./styles/globals.css";
