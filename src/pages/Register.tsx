@@ -53,7 +53,7 @@ const RegisterPage = () => {
     try {
       await register(formData);
       // El AuthContext maneja la redirección y el ProfileSetupModal
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error registering user", error);
     } finally {
       setLoading(false);

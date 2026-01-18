@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { projectId, publicAnonKey } from "@/utils/supabase/info";
+import { apiBaseUrl, publicAnonKey } from "@/utils/supabase/info";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-39ee6a8c`;
+const API_BASE_URL = apiBaseUrl;
+
+if (!API_BASE_URL) {
+  throw new Error('Missing API URL. Please configure VITE_API_URL in your .env.local file.');
+}
 
 export const QuickStart: React.FC = () => {
   const navigate = useNavigate();

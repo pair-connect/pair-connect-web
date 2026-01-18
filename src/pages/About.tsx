@@ -110,10 +110,10 @@ export const About: React.FC = () => {
           
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2 justify-center mb-8">
-            {['all', 'general', 'funcionalidad', 'comunidad'].map((category) => (
+            {(['all', 'general', 'funcionalidad', 'comunidad'] as const).map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category as any)}
+                onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   selectedCategory === category
                     ? 'bg-[#4ad3e5] text-[var(--color-dark-bg)]'

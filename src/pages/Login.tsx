@@ -13,7 +13,7 @@ const LoginPage = () => {
     try {
       await login(data.email, data.password);
       navigate("/");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error en login:", error);
       // El error ya se maneja en el AuthContext
     }

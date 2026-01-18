@@ -12,7 +12,7 @@ export const useRegister = () => {
     try {
       await register(data);
       setShowSuccessModal(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error en registro:', error);
       throw error;
     } finally {

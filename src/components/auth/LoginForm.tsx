@@ -46,7 +46,7 @@ const LoginForm = ({ handleSubmit }: LoginFormProps) => {
     setIsLoading(true);
     try {
       await handleSubmit(formData);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error en login:', error);
     } finally {
       setIsLoading(false);

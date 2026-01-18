@@ -15,6 +15,7 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+# .env.example se commitea (es solo una plantilla)
 
 # Logs
 logs/
@@ -47,6 +48,7 @@ coverage/
 # Supabase
 .supabase/
 supabase/.temp/
+supabase/migrations/
 
 # Misc
 *.pem

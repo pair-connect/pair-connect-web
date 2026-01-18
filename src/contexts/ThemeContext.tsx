@@ -36,7 +36,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     // Save to localStorage
     try {
       localStorage.setItem('theme', theme);
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn('Failed to save theme to localStorage:', error);
     }
   }, [theme]);

@@ -1,11 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, RegisterData } from '@/types';
-import { projectId, publicAnonKey } from '@/utils/supabase/info';
+import { apiBaseUrl, publicAnonKey } from '@/utils/supabase/info';
 import { supabase } from '@/utils/supabase/client';
+import { api } from '@/utils/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-39ee6a8c`;
+const API_BASE_URL = apiBaseUrl;
+
+if (!API_BASE_URL) {
+  throw new Error('Missing API URL. Please configure VITE_API_URL in your .env.local file.');
+}
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -13,39 +18,88 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Listen for session expired events from api.ts
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      console.log('Session expired event received, clearing auth state');
+      localStorage.removeItem('accessToken');
+      setUser(null);
+      setAccessToken(null);
+      setIsAuthenticated(false);
+    };
+
+    window.addEventListener('auth:session-expired', handleSessionExpired);
+
+    return () => {
+      window.removeEventListener('auth:session-expired', handleSessionExpired);
+    };
+  }, []);
+
   // Check for existing session on mount
   useEffect(() => {
+    let isMounted = true;
+
     const checkSession = async () => {
       try {
         const savedToken = localStorage.getItem('accessToken');
         
-        if (savedToken) {
-          // Verify token with server
-          const response = await fetch(`${API_BASE_URL}/auth/session`, {
-            headers: {
-              'Authorization': `Bearer ${savedToken}`,
-            },
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data.user);
-            setAccessToken(savedToken);
-            setIsAuthenticated(true);
-          } else {
-            // Token invalid, clear it
-            localStorage.removeItem('accessToken');
+        if (!savedToken) {
+          if (isMounted) {
+            setLoading(false);
           }
+          return;
         }
-      } catch (error) {
+
+        // Verify token with server
+        const response = await fetch(`${API_BASE_URL}/auth/session`, {
+          headers: {
+            'Authorization': `Bearer ${savedToken}`,
+            'apikey': publicAnonKey, // Required by Supabase Edge Functions
+          },
+        });
+
+        if (!isMounted) return;
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+          setAccessToken(savedToken);
+          setIsAuthenticated(true);
+        } else {
+          // Token invalid or expired, clear it
+          const status = response.status;
+          const errorText = await response.text().catch(() => '');
+          console.log(`Session verification failed (${status}):`, errorText || 'Unknown error');
+          
+          // Only log as error if it's not a 401 (unauthorized), which is expected for invalid tokens
+          if (status !== 401) {
+            console.error('Unexpected error during session verification:', status, errorText);
+          }
+          
+          localStorage.removeItem('accessToken');
+          setUser(null);
+          setAccessToken(null);
+          setIsAuthenticated(false);
+        }
+      } catch (error: unknown) {
+        if (!isMounted) return;
         console.error('Error checking session:', error);
         localStorage.removeItem('accessToken');
+        setUser(null);
+        setAccessToken(null);
+        setIsAuthenticated(false);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     checkSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
@@ -183,37 +237,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Clear localStorage
       localStorage.removeItem('accessToken');
       
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Logout error:', error);
     }
   };
 
   const updateProfile = async (updates: Partial<User>): Promise<void> => {
-    if (!user || !accessToken) {
+    if (!user) {
       throw new Error('Not authenticated');
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(updates),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Update failed');
-      }
-
-      const updatedUser = await response.json();
+      // Usar la función de la API que maneja correctamente la autenticación
+      const updatedUser = await api.users.updateUser(user.id, updates);
       setUser(updatedUser); // Update local state immediately
+      
+      // Actualizar también el token si viene en la respuesta
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        setAccessToken(token);
+      }
       
     } catch (error: unknown) {
       console.error('Update profile error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
+      
+      // Si el error es de sesión expirada, limpiar el estado
+      if (errorMessage.includes('sesión') || errorMessage.includes('expired') || errorMessage.includes('Unauthorized')) {
+        localStorage.removeItem('accessToken');
+        setUser(null);
+        setAccessToken(null);
+        setIsAuthenticated(false);
+      }
+      
       throw new Error(errorMessage);
     }
   };

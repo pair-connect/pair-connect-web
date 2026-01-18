@@ -12,6 +12,7 @@ import {
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { StackBadge } from "@/components/shared/StackBadge";
 import { SectionWrapper } from "@/components/layout/SectionWrapper";
 import { api } from "@/utils/api";
 import { User } from "@/types";
@@ -40,7 +41,7 @@ export const Community: React.FC = () => {
           (user) => user.profilePublic !== false
         );
         setUsers(publicUsers);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching users:", error);
       } finally {
         setLoading(false);
@@ -50,30 +51,10 @@ export const Community: React.FC = () => {
     fetchUsers();
   }, [searchQuery, selectedStack, selectedLevel]);
 
-  const getStackColor = (stack: string) => {
-    switch (stack) {
-      case "Frontend":
-        return "border-[#069a9a] text-[#069a9a]";
-      case "Backend":
-        return "border-[#ff5da2] text-[#ff5da2]";
-      case "Fullstack":
-        return "border-[#a16ee4] text-[#a16ee4]";
-      default:
-        return "border-[#4ad3e5] text-[#4ad3e5]";
-    }
-  };
 
   const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Junior":
-        return "bg-[#4ad3e5]/20 text-[#4ad3e5] border-[#4ad3e5]";
-      case "Mid":
-        return "bg-[#ff5da2]/20 text-[#ff5da2] border-[#ff5da2]";
-      case "Senior":
-        return "bg-[#a16ee4]/20 text-[#a16ee4] border-[#a16ee4]";
-      default:
-        return "bg-[#4ad3e5]/20 text-[#4ad3e5] border-[#4ad3e5]";
-    }
+    // Texto blanco para que contraste con el degradado del badge
+    return "text-white";
   };
 
   const clearFilters = () => {
@@ -138,7 +119,11 @@ export const Community: React.FC = () => {
                         }
                         className={`px-4 py-2 rounded-lg border-2 font-medium transition-colors ${
                           selectedStack === stack
-                            ? getStackColor(stack) + " bg-transparent"
+                            ? "border-[#069a9a] text-[#069a9a] bg-transparent"
+                            : selectedStack === "Backend" && stack === "Backend"
+                            ? "border-[#ff5da2] text-[#ff5da2] bg-transparent"
+                            : selectedStack === "Fullstack" && stack === "Fullstack"
+                            ? "border-[#a16ee4] text-[#a16ee4] bg-transparent"
                             : "border-[var(--color-dark-border)]/20 text-[var(--color-light)]/60 hover:border-[var(--color-dark-border)]/40"
                         }`}
                       >
@@ -234,17 +219,13 @@ export const Community: React.FC = () => {
                           <p className="text-[var(--color-light)]/60 text-sm mb-2">
                             @{user.username}
                           </p>
-                          <div className="flex flex-wrap gap-2">
-                            {user.privacySettings?.showStack !== false && (
-                              <Badge
-                                className={`${getStackColor(user.stack)} border bg-transparent text-xs px-2 py-0.5`}
-                              >
-                                {user.stack}
-                              </Badge>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {user.stack && (
+                              <StackBadge stack={user.stack} size="sm" />
                             )}
-                            {user.privacySettings?.showLevel !== false && (
+                            {user.level && (
                               <Badge
-                                className={`${getLevelColor(user.level)} border text-xs px-2 py-0.5`}
+                                className="text-white border text-xs px-2 py-0.5 bg-gradient-to-r from-[#4ad3e5] to-[#ff5da2]"
                               >
                                 {user.level}
                               </Badge>

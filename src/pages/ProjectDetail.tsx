@@ -51,7 +51,7 @@ export const ProjectDetail: React.FC = () => {
         ]);
         setProject(projectData);
         setSessions(sessionsData);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching project:", error);
       } finally {
         setLoading(false);
@@ -67,7 +67,7 @@ export const ProjectDetail: React.FC = () => {
     try {
       await api.projects.deleteProject(project.id);
       navigate("/mis-proyectos");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error deleting project:", error);
     }
   };
@@ -85,7 +85,7 @@ export const ProjectDetail: React.FC = () => {
         interested: updatedProject.interested || [],
       });
       setIsInterested(updatedProject.interested?.includes(user.id) || false);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error toggling interest:", error);
     }
   };

@@ -42,7 +42,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       await login(loginData.email, loginData.password);
       onClose();
       setLoginData({ email: '', password: '' });
-    } catch (err) {
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
       if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('Invalid credentials')) {
         setError('Credenciales inválidas. Verifica tu email y contraseña, o regístrate si no tienes cuenta.');

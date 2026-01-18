@@ -90,7 +90,7 @@ export const CreateProject: React.FC = () => {
 
           console.log("Loading project data:", formDataToSet);
           setFormData(formDataToSet);
-        } catch (err) {
+        } catch (err: unknown) {
           console.error("Error loading project:", err);
           navigate("/mis-proyectos");
         } finally {

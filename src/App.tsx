@@ -6,7 +6,6 @@ import { Footer } from "@/components/layout/Footer";
 import { Home } from "@/pages/Home";
 import { SessionDetail } from "@/pages/SessionDetail";
 import { Team } from "@/pages/Team";
-import { AdminSeed } from "@/pages/AdminSeed";
 import { QuickStart } from "@/pages/QuickStart";
 import { Diagnostics } from "@/pages/Diagnostics";
 import { Profile } from "@/pages/Profile";
@@ -90,10 +89,6 @@ function App() {
                 <Route
                   path="/proyectos/:id/solicitudes"
                   element={<ProjectRequests />}
-                />
-                <Route
-                  path="/admin/seed"
-                  element={<AdminSeed />}
                 />
                 <Route
                   path="/quick-start"

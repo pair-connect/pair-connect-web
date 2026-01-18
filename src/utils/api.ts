@@ -1,7 +1,16 @@
-import { projectId, publicAnonKey } from '@/utils/supabase/info';
-import { User, Project, Session } from '@/types';
+import { apiBaseUrl, publicAnonKey } from '@/utils/supabase/info';
+import { User, Project, Session, ProjectRequest } from '@/types';
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-39ee6a8c`;
+const API_BASE_URL = apiBaseUrl;
+
+if (!API_BASE_URL) {
+  throw new Error('Missing API URL. Please configure VITE_API_URL in your .env.local file.');
+}
+
+if (!publicAnonKey) {
+  console.error('❌ Missing VITE_SUPABASE_ANON_KEY in .env.local');
+  throw new Error('Missing Supabase Anon Key. Please configure VITE_SUPABASE_ANON_KEY in your .env.local file.');
+}
 
 // Helper to get auth token from localStorage
 const getAuthToken = (): string | null => {
@@ -9,7 +18,11 @@ const getAuthToken = (): string | null => {
 };
 
 // Helper to make requests without authentication (for public endpoints)
-const fetchNoAuth = async (url: string, options: RequestInit = {}) => {
+const fetchNoAuth = async <T = unknown>(url: string, options: RequestInit = {}): Promise<T> => {
+  if (!publicAnonKey) {
+    throw new Error('Supabase Anon Key is missing. Please check your .env.local file.');
+  }
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'apikey': publicAnonKey, // Required by Supabase even for public endpoints
@@ -27,19 +40,24 @@ const fetchNoAuth = async (url: string, options: RequestInit = {}) => {
     throw new Error(error.error || `Request failed with status ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 };
 
 // Helper to make authenticated requests
-const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+const fetchWithAuth = async <T = unknown>(url: string, options: RequestInit = {}): Promise<T> => {
   const token = getAuthToken();
   
   if (!token) {
     throw new Error('No estás autenticado. Por favor, inicia sesión.');
   }
+
+  if (!publicAnonKey) {
+    throw new Error('Supabase Anon Key is missing. Please check your .env.local file.');
+  }
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'apikey': publicAnonKey, // Required by Supabase Edge Functions
     'Authorization': `Bearer ${token}`,
     ...options.headers,
   };
@@ -53,6 +71,8 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     if (response.status === 401) {
       // Token inválido o expirado
       localStorage.removeItem('accessToken');
+      // Dispatch custom event to notify AuthContext
+      window.dispatchEvent(new CustomEvent('auth:session-expired'));
       throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
     }
     
@@ -60,7 +80,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     throw new Error(error.error || `Request failed with status ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 };
 
 // ==================== USER API ====================
@@ -86,12 +106,17 @@ export const userApi = {
 
     const token = getAuthToken();
     if (!token) {
-      throw new Error('No authentication token');
+      throw new Error('No estás autenticado. Por favor, inicia sesión.');
+    }
+
+    if (!publicAnonKey) {
+      throw new Error('Supabase Anon Key is missing. Please check your .env.local file.');
     }
 
     const headers: HeadersInit = {
-      'apikey': publicAnonKey,
+      'apikey': publicAnonKey, // Required by Supabase Edge Functions
       'Authorization': `Bearer ${token}`,
+      // Don't set Content-Type for FormData - browser will set it with boundary
     };
 
     const response = await fetch(`${API_BASE_URL}/users/${userId}/avatar`, {
@@ -101,6 +126,14 @@ export const userApi = {
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // Token inválido o expirado
+        localStorage.removeItem('accessToken');
+        // Dispatch custom event to notify AuthContext
+        window.dispatchEvent(new CustomEvent('auth:session-expired'));
+        throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      }
+      
       const error = await response.json().catch(() => ({ error: 'Upload failed' }));
       throw new Error(error.error || `Upload failed with status ${response.status}`);
     }
@@ -171,11 +204,11 @@ export const projectApi = {
     });
   },
 
-  getProjectRequests: async (projectId: string): Promise<any[]> => {
+  getProjectRequests: async (projectId: string): Promise<ProjectRequest[]> => {
     return fetchWithAuth(`${API_BASE_URL}/projects/${projectId}/requests`);
   },
 
-  updateProjectRequest: async (projectId: string, requestId: string, action: 'accept' | 'reject'): Promise<any> => {
+  updateProjectRequest: async (projectId: string, requestId: string, action: 'accept' | 'reject'): Promise<ProjectRequest> => {
     return fetchWithAuth(`${API_BASE_URL}/projects/${projectId}/requests/${requestId}`, {
       method: 'POST',
       body: JSON.stringify({ action }),

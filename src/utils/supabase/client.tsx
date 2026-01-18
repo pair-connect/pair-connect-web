@@ -1,12 +1,14 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '@/utils/supabase/info';
+import { supabaseUrl, publicAnonKey } from '@/utils/supabase/info';
 
 // Singleton Supabase client for frontend
 let supabaseInstance: ReturnType<typeof createSupabaseClient> | null = null;
 
 export const createClient = () => {
   if (!supabaseInstance) {
-    const supabaseUrl = `https://${projectId}.supabase.co`;
+    if (!supabaseUrl || !publicAnonKey) {
+      throw new Error('Missing Supabase configuration. Please check your .env.local file.');
+    }
     supabaseInstance = createSupabaseClient(supabaseUrl, publicAnonKey);
   }
   return supabaseInstance;

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { StackBadge } from "@/components/shared/StackBadge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -82,7 +83,7 @@ export const Profile: React.FC = () => {
         // Fetch user sessions
         const userSessions = await api.sessions.getSessions({ ownerId: userId });
         setSessions(userSessions);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching profile:", error);
         if (isAuthenticated && currentUser && userId === currentUser.id) {
           setProfileUser(currentUser);
@@ -104,7 +105,7 @@ export const Profile: React.FC = () => {
       setProfileUser({ ...profileUser!, ...editForm });
       setIsEditing(false);
       setAvatarPreview(null);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error updating profile:", error);
     }
   };
@@ -142,9 +143,10 @@ export const Profile: React.FC = () => {
       setEditForm({ ...editForm, avatar: result.avatar });
       // Update current user in context
       await updateProfile({ avatar: result.avatar });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading avatar:", error);
-      alert(error.message || "Error al subir el avatar. Por favor, intenta de nuevo.");
+      const errorMessage = error instanceof Error ? error.message : "Error al subir el avatar. Por favor, intenta de nuevo.";
+      alert(errorMessage);
       setAvatarPreview(null);
     } finally {
       setUploadingAvatar(false);
@@ -161,35 +163,15 @@ export const Profile: React.FC = () => {
       setProfileUser({ ...profileUser!, avatar: undefined });
       setEditForm({ ...editForm, avatar: undefined });
       setAvatarPreview(null);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error removing avatar:", error);
     }
   };
 
-  const getStackColor = (stack: string) => {
-    switch (stack) {
-      case "Frontend":
-        return "border-[#069a9a] text-[#069a9a]";
-      case "Backend":
-        return "border-[#ff5da2] text-[#ff5da2]";
-      case "Fullstack":
-        return "border-[#a16ee4] text-[#a16ee4]";
-      default:
-        return "border-[#4ad3e5] text-[#4ad3e5]";
-    }
-  };
 
   const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Junior":
-        return "bg-[#4ad3e5]/20 text-[#4ad3e5] border-[#4ad3e5]";
-      case "Mid":
-        return "bg-[#ff5da2]/20 text-[#ff5da2] border-[#ff5da2]";
-      case "Senior":
-        return "bg-[#a16ee4]/20 text-[#a16ee4] border-[#a16ee4]";
-      default:
-        return "bg-[#4ad3e5]/20 text-[#4ad3e5] border-[#4ad3e5]";
-    }
+    // Texto blanco para que contraste con el degradado del badge
+    return "text-white";
   };
 
   if (loading) {
@@ -288,18 +270,20 @@ export const Profile: React.FC = () => {
                       {profileUser.name}
                     </h1>
                     <p className="text-[var(--color-gray-blue)] text-lg mb-3">@{profileUser.username}</p>
-                    <div className="flex flex-wrap items-center gap-3 mb-4">
-                      <Badge
-                        className={`${getStackColor(profileUser.stack)} border-2 bg-transparent px-4 py-1.5 font-semibold`}
-                      >
-                        {profileUser.stack} Developer
-                      </Badge>
-                      <Badge
-                        className={`${getLevelColor(profileUser.level)} border px-3 py-1 font-medium`}
-                      >
-                        {profileUser.level}
-                      </Badge>
-                    </div>
+                    {(profileUser.stack || profileUser.level) && (
+                      <div className="flex flex-wrap items-center gap-3 mb-4">
+                        {profileUser.stack && (
+                          <StackBadge stack={profileUser.stack} size="md" className="font-semibold" />
+                        )}
+                        {profileUser.level && (
+                          <Badge
+                            className={`${getLevelColor(profileUser.level)} border px-3 py-1 font-medium bg-gradient-to-r from-[#4ad3e5] to-[#ff5da2]`}
+                          >
+                            {profileUser.level}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                     {profileUser.privacySettings?.showBio !== false &&
                       profileUser.bio && (
                         <p className="text-[var(--color-light)]/80 text-base max-w-2xl leading-relaxed">
@@ -780,12 +764,9 @@ export const Profile: React.FC = () => {
                             {project.description}
                           </p>
                           <div className="flex flex-wrap gap-2">
-                            <Badge
-                              variant="solid"
-                              className="bg-transparent text-[var(--color-light)] border border-[#4ad3e5] text-xs"
-                            >
-                              {project.stack}
-                            </Badge>
+                            {project.stack && (
+                              <StackBadge stack={project.stack} size="sm" />
+                            )}
                             {project.languages.slice(0, 2).map((lang, idx) => (
                               <Badge
                                 key={idx}

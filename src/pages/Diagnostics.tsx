@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { projectId, publicAnonKey } from '@/utils/supabase/info';
+import { apiBaseUrl, publicAnonKey } from '@/utils/supabase/info';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/utils/supabase/client';
 
-const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-39ee6a8c`;
+const API_BASE_URL = apiBaseUrl;
+
+if (!API_BASE_URL) {
+  throw new Error('Missing API URL. Please configure VITE_API_URL in your .env.local file.');
+}
 
 export const Diagnostics: React.FC = () => {
   const { user } = useAuth();
   const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [dbStats, setDbStats] = useState<any>(null);
 
   const addLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     const emoji = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';

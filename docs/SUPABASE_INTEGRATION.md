@@ -41,27 +41,26 @@
 
 ## 🗄️ Arquitectura de Base de Datos
 
-### KV Store Structure
+### Estructura Relacional
 
-Los datos se almacenan en el **KV Store** (tabla key-value) de Supabase con la siguiente estructura:
+Los datos se almacenan en **tablas relacionales** de PostgreSQL con la siguiente estructura:
 
-```typescript
-// USERS
-user:{userId} → User object
-user_projects:{userId} → string[] (array de project IDs)
-
-// PROJECTS
-project:{projectId} → Project object
-project_sessions:{projectId} → string[] (array de session IDs)
-
-// SESSIONS
-session:{sessionId} → Session object
+```sql
+-- Tablas principales
+users              -- Perfiles de usuario
+projects           -- Proyectos
+sessions           -- Sesiones de pair programming
+session_participants -- Relación many-to-many: usuarios en sesiones
+session_interested   -- Relación many-to-many: usuarios interesados en sesiones
+project_interested   -- Relación many-to-many: usuarios interesados en proyectos
+user_bookmarks       -- Relación many-to-many: sesiones favoritas de usuarios
 ```
 
-### Ventajas del KV Store:
-- ✅ **Sin migraciones** - No necesitas crear schemas SQL
-- ✅ **Flexible** - Perfecto para prototipos y MVP
-- ✅ **Schema-less** - Cambia la estructura sin ALTER TABLE
+### Características:
+- ✅ **Row Level Security (RLS)** - Seguridad a nivel de fila habilitada
+- ✅ **Relaciones normalizadas** - Estructura SQL estándar
+- ✅ **Índices optimizados** - Para mejor rendimiento en consultas
+- ✅ **Triggers automáticos** - Para actualización de timestamps
 - ✅ **Rápido** - Get/Set operations optimizadas
 
 ---
@@ -103,12 +102,11 @@ Como la base de datos está vacía, necesitas crear datos iniciales. Hay dos opc
 Ejecuta el script de seed para poblar con datos de prueba:
 
 ```javascript
-// 1. Abre la consola del navegador en tu app
-// 2. Actualiza estas variables en /src/data/seedDatabase.ts:
-const API_BASE_URL = 'https://crfrnnvmhrmhuqcbvpoh.supabase.co/functions/v1/make-server-39ee6a8c';
-const ANON_KEY = 'tu_anon_key';
+// 1. Configura las variables de entorno en .env.local
+// 2. Usa las variables desde el código:
+import { apiBaseUrl, publicAnonKey } from '@/utils/supabase/info';
 
-// 3. Ejecuta:
+// 3. Ejecuta el seed:
 import { seedDatabase } from './data/seedDatabase';
 await seedDatabase();
 ```
@@ -128,11 +126,13 @@ Esto creará:
 
 ```javascript
 // Login
-const response = await fetch('https://crfrnnvmhrmhuqcbvpoh.supabase.co/functions/v1/make-server-39ee6a8c/auth/login', {
+import { apiBaseUrl, publicAnonKey } from '@/utils/supabase/info';
+
+const response = await fetch(`${apiBaseUrl}/auth/login`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer YOUR_ANON_KEY'
+    'Authorization': `Bearer ${publicAnonKey}`
   },
   body: JSON.stringify({
     email: 'user@example.com',
@@ -166,17 +166,18 @@ await api.bookmarks.toggleBookmark('session_id');
 
 ## 🔑 Variables de Entorno
 
-Las variables ya están configuradas automáticamente:
+Configura las variables en tu archivo `.env.local`:
 
-```typescript
-// /src/utils/supabase/info.tsx
-export const projectId = "crfrnnvmhrmhuqcbvpoh"
-export const publicAnonKey = "eyJhbGci..."
+```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+VITE_API_URL=https://tu-proyecto.supabase.co/functions/v1/api-server
 ```
 
 **⚠️ IMPORTANTE:**
-- `publicAnonKey` es **segura** para el frontend (solo permisos de lectura)
+- `VITE_SUPABASE_ANON_KEY` es **segura** para el frontend (solo permisos limitados)
 - `SUPABASE_SERVICE_ROLE_KEY` está **solo en el servidor** (nunca la expongas al frontend)
+- Usa variables de entorno, no hardcodees credenciales en el código
 
 ---
 
@@ -272,8 +273,8 @@ export const publicAnonKey = "eyJhbGci..."
   - Perfecto para desarrollo ✅
 
 - **Performance:**
-  - Las queries al KV Store son muy rápidas
-  - Usa los filtros de API para optimizar
+  - Las queries SQL están optimizadas con índices
+  - Usa los filtros de API para optimizar consultas
 
 - **Seguridad:**
   - Todos los endpoints sensibles requieren autenticación
@@ -294,10 +295,10 @@ export const publicAnonKey = "eyJhbGci..."
    - No se almacenan en texto plano
    - Políticas de seguridad aplicadas
 
-3. **KV Store vs SQL:**
-   - Usamos KV Store para simplicidad
-   - Si necesitas queries complejas, migra a tablas SQL
-   - Consulta la documentación de Supabase para migraciones
+3. **Base de Datos Relacional:**
+   - Usamos tablas SQL normalizadas con relaciones
+   - Row Level Security (RLS) para seguridad a nivel de fila
+   - El schema de la base de datos está definido en las migraciones (no incluidas en el repositorio por seguridad)
 
 ---
 

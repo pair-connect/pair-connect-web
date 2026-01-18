@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Stack, Level } from '@/types';
-import { availableLanguages } from '@/data/mockData';
+import { availableLanguages } from '@/data/constants';
 import logoSvg from '@/assets/images/logos/logo.svg';
 
 interface ProfileSetupModalProps {
@@ -37,7 +37,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, on
         level: level
       });
       onClose();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error updating profile:', err);
     } finally {
       setIsLoading(false);

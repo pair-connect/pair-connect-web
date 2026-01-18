@@ -1,7 +1,7 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { Stack, Level } from "@/types";
-import { availableLanguages } from "@/data/mockData";
+import { availableLanguages } from "@/data/constants";
 
 interface SessionFiltersProps {
   searchQuery: string;

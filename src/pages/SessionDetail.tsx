@@ -57,7 +57,7 @@ export const SessionDetail: React.FC = () => {
 
         setProject(projectData);
         setOwner(ownerData);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching session:", error);
       } finally {
         setLoading(false);

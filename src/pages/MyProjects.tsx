@@ -31,7 +31,7 @@ export const MyProjects: React.FC = () => {
           ownerId: user.id,
         });
         setProjects(userProjects);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching projects:", error);
       } finally {
         setLoading(false);
@@ -49,7 +49,7 @@ export const MyProjects: React.FC = () => {
       setProjects(projects.filter((p) => p.id !== projectToDelete));
       setShowDeleteModal(false);
       setProjectToDelete(null);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error deleting project:", error);
     }
   };

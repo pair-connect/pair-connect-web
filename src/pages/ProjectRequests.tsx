@@ -44,7 +44,7 @@ export const ProjectRequests: React.FC = () => {
         }
 
         setRequests(requestsData);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error fetching requests:', error);
       } finally {
         setLoading(false);
@@ -64,7 +64,7 @@ export const ProjectRequests: React.FC = () => {
       // Refresh requests
       const updatedRequests = await api.projects.getProjectRequests(id);
       setRequests(updatedRequests);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Error ${action === 'accept' ? 'accepting' : 'rejecting'} request:`, error);
       alert(`Error al ${action === 'accept' ? 'aceptar' : 'rechazar'} la solicitud`);
     } finally {

@@ -51,7 +51,7 @@ export const Home: React.FC = () => {
           date: new Date(session.date),
         }));
         setSessions(sessionsWithDates);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching sessions:", error);
       } finally {
         setLoading(false);
@@ -75,7 +75,7 @@ export const Home: React.FC = () => {
             interested: project.interested || [],
           }));
           setProjects(projectsWithDates);
-        } catch (error) {
+        } catch (error: unknown) {
           console.error("Error fetching projects:", error);
         } finally {
           setProjectsLoading(false);
@@ -116,7 +116,7 @@ export const Home: React.FC = () => {
       // The user context will be updated when we fetch sessions again
       // For now, we can optimistically update local state
       window.location.reload(); // Simple approach - reload to get fresh data
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error toggling bookmark:", error);
     }
   };
@@ -137,7 +137,7 @@ export const Home: React.FC = () => {
             : p
         )
       );
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error toggling project interest:", error);
     }
   };
@@ -222,6 +222,7 @@ export const Home: React.FC = () => {
             <div className="w-full max-w-[200px] md:max-w-[200px] mx-auto md:mx-0 lg:max-w-[240px] space-y-3">
               <Calendar
                 sessions={sessions}
+                projects={projects}
                 selectedDate={selectedCalendarDate}
                 onDateSelect={handleCalendarDateSelect}
               />

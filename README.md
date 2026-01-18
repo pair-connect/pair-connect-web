@@ -1,9 +1,9 @@
-# 🚀 Pair Connect
+# <img src="src/assets/images/logos/logo.svg" alt="Pair Connect Logo" width="24" height="24"/> Pair Connect
 
-**Plataforma web de pair programming** donde desarrolladores pueden crear perfiles, hacer match con otros desarrolladores y trabajar juntos en proyectos colaborativos en tiempo real.
+**Plataforma web de pair programming** donde desarrolladores/as pueden crear perfiles, hacer match con otros desarrolladores/as y trabajar juntos/as en proyectos colaborativos a través de sesiones programadas.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+![License](https://img.shields.io/badge/license-Proprietary-red.svg)
 ![React](https://img.shields.io/badge/react-18.3-61dafb.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.6-3178c6.svg)
 ![Supabase](https://img.shields.io/badge/supabase-ready-3ecf8e.svg)
@@ -15,17 +15,18 @@
 - [Características](#-características)
 - [Tecnologías](#-tecnologías)
 - [Requisitos Previos](#-requisitos-previos)
-- [Instalación](#-instalación)
+- [Instalación y Configuración](#-instalación-y-configuración)
 - [Configuración](#-configuración)
 - [Uso](#-uso)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [API Backend](#-api-backend)
 - [Arquitectura](#-arquitectura)
 - [Scripts Disponibles](#-scripts-disponibles)
-- [Deployment](#-deployment)
 - [Documentación](#-documentación)
-- [Contribuir](#-contribuir)
 - [Licencia](#-licencia)
+- [Autoras](#-autoras)
+- [Contacto](#-contacto)
+- [Roadmap](#-roadmap)
 
 ---
 
@@ -40,7 +41,7 @@
 
 ### 👤 **Gestión de Perfiles**
 
-- Perfiles personalizados de desarrollador
+- Perfiles personalizados de desarrollador/a
 - Stack tecnológico (Frontend, Backend, Fullstack)
 - Niveles de experiencia (Junior, Mid, Senior)
 - Lenguajes de programación
@@ -55,7 +56,7 @@
 
 ### 🎯 **Sistema de Sesiones**
 
-- Crear sesiones de pair programming
+- Crear sesiones de pair programming o group programming
 - Fecha, hora y duración configurables
 - Límite de participantes
 - Unirse/salir de sesiones
@@ -64,7 +65,7 @@
 
 ### 🔍 **Búsqueda y Filtrado**
 
-- Buscar desarrolladores por nombre/username
+- Buscar desarrolladores/as por nombre/username
 - Filtrar proyectos por stack y nivel
 - Filtrar sesiones por tecnología
 - Búsqueda en tiempo real
@@ -105,7 +106,7 @@
 
 - **Three-tier architecture**: Frontend → Server → Database
 - **RESTful API** con Hono
-- **Key-Value Store** usando tabla PostgreSQL
+- **Base de datos relacional** PostgreSQL con tablas normalizadas
 - **JWT Authentication** con Supabase Auth
 
 ---
@@ -117,20 +118,27 @@ Antes de comenzar, asegúrate de tener instalado:
 - **Node.js** >= 18.0.0
 - **npm** >= 9.0.0 o **yarn** >= 1.22.0
 - **Git** (para clonar el repositorio)
-- Cuenta en **[Supabase](https://supabase.com/)** (opcional para desarrollo local)
 
 ---
 
-## 🚀 Instalación
+## 🚀 Instalación y Configuración
 
-### 1. **Clonar el repositorio**
+### **Requisitos del Sistema**
+
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- Cuenta de Supabase configurada
+
+### **Configuración del Entorno**
+
+1. **Clonar el repositorio** (para desarrollo interno)
 
 ```bash
-git clone https://github.com/tu-usuario/pair-connect.git
-cd pair-connect
+git clone https://github.com/tu-usuario/pair-connect-web.git
+cd pair-connect-web
 ```
 
-### 2. **Instalar dependencias**
+2. **Instalar dependencias**
 
 ```bash
 npm install
@@ -138,15 +146,23 @@ npm install
 
 ### 3. **Configurar variables de entorno**
 
-Crea un archivo `.env.local` en la raíz del proyecto:
+Copia el archivo `.env.example` a `.env.local` y completa con tus valores reales:
+
+```bash
+cp .env.example .env.local
+```
+
+Luego edita `.env.local` con tus credenciales de Supabase:
 
 ```env
 # Supabase Configuration
 VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
 VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+# IMPORTANTE: Usa el SLUG real de tu función Edge (no el nombre)
+# El slug lo encuentras en: Edge Functions > tu-funcion > Details > Slug
+VITE_API_URL=https://tu-proyecto.supabase.co/functions/v1/tu-slug-real-aqui
 ```
 
-> **Nota**: Las credenciales actuales están en `/src/utils/supabase/info.tsx` pero se recomienda usar variables de entorno en producción.
 
 ### 4. **Ejecutar en desarrollo**
 
@@ -162,47 +178,8 @@ La aplicación estará disponible en `http://localhost:3000`
 
 ### **Supabase Setup**
 
-El proyecto ya está configurado con una instancia de Supabase en la región `us-east-1` (Virginia).
+El proyecto utiliza Supabase como backend. Configura tu propia instancia siguiendo las instrucciones de configuración.
 
-#### **Si quieres usar tu propia instancia de Supabase:**
-
-1. **Crear proyecto en Supabase**
-
-   - Ve a [supabase.com](https://supabase.com/)
-   - Crea un nuevo proyecto
-   - Copia la URL y las API keys
-
-2. **Configurar Edge Function**
-   - El servidor backend está en `/src/supabase/functions/server/index.tsx`
-   - Deploy usando Supabase CLI:
-
-```bash
-# Instalar Supabase CLI
-npm install -g supabase
-
-# Login
-supabase login
-
-# Link proyecto
-supabase link --project-ref tu-project-ref
-
-# Deploy función
-supabase functions deploy server
-```
-
-3. **Configurar secretos en Supabase**
-
-```bash
-supabase secrets set SUPABASE_URL=https://tu-proyecto.supabase.co
-supabase secrets set SUPABASE_ANON_KEY=tu-anon-key
-supabase secrets set SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key
-```
-
-4. **Actualizar frontend**
-   - Modifica `/src/utils/supabase/info.tsx` con tus credenciales
-   - O usa variables de entorno `.env.local`
-
----
 
 ## 🎯 Uso
 
@@ -258,46 +235,24 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key
 
 ```
 pair-connect/
-├── docs/                      # Documentación técnica
-│   ├── AUTHENTICATION.md      # Sistema de autenticación
-│   ├── QUICKSTART.md          # Guía rápida de inicio
-│   ├── SUPABASE_INTEGRATION.md # Integración con Supabase
-│   └── ATTRIBUTIONS.md        # Atribuciones y licencias
+├── docs/                  
 ├── public/                    # Archivos estáticos
 ├── src/                       # Código fuente
 │   ├── assets/                # Imágenes y recursos
-│   ├── components/            # Componentes React reutilizables
-│   │   ├── auth/              # Componentes de autenticación
-│   │   ├── calendar/          # Componentes de calendario
-│   │   ├── figma/             # Componentes de Figma Make
-│   │   ├── landing/           # Componentes de landing
-│   │   ├── layout/            # Componentes de layout
-│   │   ├── sessions/          # Componentes de sesiones
-│   │   └── ui/                # Componentes UI base (shadcn/ui)
+│   ├── components/
 │   ├── contexts/              # React Context
 │   │   ├── AuthContext.tsx
 │   │   └── ThemeContext.tsx
-│   ├── data/                  # Datos mock y seed
-│   │   ├── mockData.ts
-│   │   └── seedDatabase.ts
-│   ├── hooks/                 # Custom hooks
-│   │   └── useTheme.ts
-│   ├── imports/               # Componentes generados de Figma
+│   ├── data/
+│   ├── hooks/
 │   ├── pages/                 # Páginas/vistas principales
-│   │   ├── Home.tsx
-│   │   ├── SessionDetail.tsx
-│   │   ├── Team.tsx
-│   │   ├── AdminSeed.tsx
-│   │   ├── QuickStart.tsx
-│   │   └── Diagnostics.tsx
 │   ├── styles/                # Estilos globales
 │   │   ├── globals.css
 │   │   └── shooting-stars.css
 │   ├── supabase/              # Backend Edge Functions
 │   │   └── functions/
-│   │       └── server/
-│   │           ├── index.tsx  # Servidor principal Hono
-│   │           └── kv_store.tsx
+│   │       └── tu-funcion-edge/
+│   │           └── index.ts   # Servidor principal Hono
 │   ├── types/                 # TypeScript types
 │   │   └── index.ts
 │   ├── utils/                 # Utilidades
@@ -325,9 +280,15 @@ El backend está implementado con **Supabase Edge Functions** usando **Hono**.
 
 ### **Base URL**
 
+La URL base de la API se configura mediante la variable de entorno `VITE_API_URL` en tu archivo `.env.local`:
+
 ```
-https://crfrnnvmhrmhuqcbvpoh.supabase.co/functions/v1/make-server-39ee6a8c
+https://tu-proyecto.supabase.co/functions/v1/tu-slug-real-aqui
 ```
+
+**⚠️ IMPORTANTE:** Usa el **SLUG** real de tu función Edge, no el nombre. El slug lo encuentras en:
+- Dashboard de Supabase → Edge Functions → tu-funcion → Details → Slug
+- El slug puede ser diferente al nombre (ej: función se llama "api-server" pero el slug es "make-server-39ee6a8c")
 
 ### **Endpoints Principales**
 
@@ -384,25 +345,6 @@ Para endpoints protegidos, incluye el token JWT en el header:
 ```javascript
 Authorization: Bearer <access_token>
 ```
-
-### **Ejemplo de Request**
-
-```javascript
-const response = await fetch(`${API_BASE_URL}/projects`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${accessToken}`,
-  },
-  body: JSON.stringify({
-    name: "Mi Proyecto",
-    description: "Descripción del proyecto",
-    stack: "Fullstack",
-    level: "Mid",
-  }),
-});
-```
-
 ---
 
 ## 🏗️ Arquitectura
@@ -427,15 +369,19 @@ const response = await fetch(`${API_BASE_URL}/projects`, {
 │  - Lógica de negocio                           │
 │  - CORS configurado                            │
 └─────────────────┬───────────────────────────────┘
-                  │ KV Store API
+                  │ PostgreSQL API
                   │ Supabase Admin Client
 ┌─────────────────▼───────────────────────────────┐
 │                  DATABASE                       │
 │  PostgreSQL (Supabase)                         │
-│  - Tabla: kv_store_39ee6a8c                   │
-│    - key: string (primary)                     │
-│    - value: jsonb                              │
-│  - Supabase Auth (usuarios)                    │
+│  - Tablas relacionales:                        │
+│    • users (perfiles)                           │
+│    • projects (proyectos)                       │
+│    • sessions (sesiones)                        │
+│    • session_participants (relaciones)         │
+│    • user_bookmarks (favoritos)                │
+│  - Row Level Security (RLS) habilitado          │
+│  - Supabase Auth (autenticación)               │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -447,63 +393,9 @@ const response = await fetch(`${API_BASE_URL}/projects`, {
 3. Supabase Auth → Valida credenciales → Retorna JWT
 4. Frontend → Fetch /users/:id con JWT
 5. Backend → Verifica JWT con supabase.auth.getUser()
-6. Backend → Obtiene perfil de KV store
+6. Backend → Obtiene perfil de la base de datos
 7. Backend → Retorna perfil
 8. Frontend → Guarda user + token en AuthContext + localStorage
-```
-
-### **Data Models**
-
-#### **User**
-
-```typescript
-{
-  id: string;              // UUID de Supabase Auth
-  username: string;        // Único
-  name: string;
-  email: string;           // Único
-  stack: 'Frontend' | 'Backend' | 'Fullstack';
-  level: 'Junior' | 'Mid' | 'Senior';
-  languages: string[];
-  contacts: {
-    email: string;
-    github?: string;
-    linkedin?: string;
-  };
-  bookmarks: string[];     // IDs de sesiones
-  createdAt: string;       // ISO 8601
-}
-```
-
-#### **Project**
-
-```typescript
-{
-  id: string; // proj_timestamp_random
-  ownerId: string; // User ID
-  name: string;
-  description: string;
-  stack: string;
-  level: string;
-  createdAt: string;
-}
-```
-
-#### **Session**
-
-```typescript
-{
-  id: string;              // sess_timestamp_random
-  projectId: string;
-  ownerId: string;
-  date: string;            // ISO 8601
-  duration: number;        // Minutos
-  maxParticipants: number;
-  participants: string[];  // User IDs
-  interested: string[];    // User IDs
-  notes?: string;
-  createdAt: string;
-}
 ```
 
 ---
@@ -526,48 +418,6 @@ npx tsc --noEmit        # Verifica tipos TypeScript
 
 ---
 
-## 🚀 Deployment
-
-### **Frontend (Vercel/Netlify)**
-
-#### **Vercel**
-
-```bash
-# Instalar Vercel CLI
-npm install -g vercel
-
-# Deploy
-vercel
-
-# Configurar variables de entorno en Vercel Dashboard:
-# - VITE_SUPABASE_URL
-# - VITE_SUPABASE_ANON_KEY
-```
-
-#### **Netlify**
-
-```bash
-# Build command
-npm run build
-
-# Publish directory
-dist
-
-# Variables de entorno en Netlify Dashboard:
-# - VITE_SUPABASE_URL
-# - VITE_SUPABASE_ANON_KEY
-```
-
-### **Backend (Supabase Edge Functions)**
-
-El backend ya está desplegado en Supabase. Para actualizar:
-
-```bash
-supabase functions deploy server
-```
-
----
-
 ## 📚 Documentación
 
 Documentación técnica adicional disponible en la carpeta [`docs/`](./docs/):
@@ -579,82 +429,37 @@ Documentación técnica adicional disponible en la carpeta [`docs/`](./docs/):
 
 ---
 
-## 🎨 Personalización
+### **Buenas Prácticas Implementadas**
 
-### **Colores del Tema**
-
-Edita `/src/styles/globals.css` para cambiar los colores:
-
-```css
-:root {
-  --color-cyan: #4ad3e5;
-  --color-magenta: #ff5da2;
-  --color-dark-bg: #0b0c10;
-  --color-dark-card: #14181a;
-  --color-dark-border: #29303d;
-}
-```
-
-### **Configuración de Tailwind**
-
-Los tokens CSS están en `/src/styles/globals.css`. Tailwind v4 no requiere `tailwind.config.js`.
-
----
-
-
-### **Guías de Estilo**
+Este proyecto sigue las siguientes buenas prácticas de desarrollo:
 
 - **React**: Componentes funcionales con hooks
-- **TypeScript**: Tipos explícitos, evitar `any`
-- **CSS**: Usar Tailwind classes, evitar estilos inline
-- **Commits**: Conventional Commits (feat, fix, docs, style, refactor, test, chore)
-
-### **Principios de Código**
-
-- **DRY** (Don't Repeat Yourself)
-- **SOLID** (Single Responsibility, Open/Closed, etc.)
-- **KISS** (Keep It Simple, Stupid)
-- **Accesibilidad** (ARIA labels, semantic HTML, keyboard nav)
-
----
-
-
-### **CORS Error**
-
-**Solución**: El servidor ya tiene CORS habilitado para todos los orígenes. Si persiste:
-
-1. Verifica la URL del servidor en `/src/utils/supabase/info.tsx`
-2. Asegúrate de que la Edge Function esté desplegada
-
-### **Build Error**
-
-**Solución**:
-
-```bash
-# Limpia caché y reinstala
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
+- **TypeScript**: Tipos explícitos para mayor seguridad de tipos
+- **CSS**: Uso de Tailwind classes, evitando estilos inline
+- **Arquitectura**: Principios DRY, SOLID y KISS
+- **Accesibilidad**: ARIA labels, HTML semántico, navegación por teclado
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
+Este proyecto es propietario. Todos los derechos reservados. Ver archivo `LICENSE` para más detalles.
 
 ---
 
-## 👨‍💻 Autor
+## 👩‍💻 Autoras
 
-Creado con ❤️ para la comunidad de desarrolladores
+Creado con ❤️ por:
+
+- **[Lynn](https://github.com/Dpoetess)** - Fullstack Developer
+- **[Helena](https://github.com/helopgom)** - Fullstack Developer  
+- **[Jess](https://github.com/jess-ar)** - Fullstack Developer
 
 ---
-
 
 ## 📞 Contacto
 
-Para preguntas, sugerencias o reportar bugs, abre un **[Issue](https://github.com/tu-usuario/pair-connect/issues)** en GitHub.
+Para consultas sobre el producto o soporte técnico, escribe a **pairconnect@mail.com**
 
 ---
 
@@ -663,7 +468,6 @@ Para preguntas, sugerencias o reportar bugs, abre un **[Issue](https://github.co
 ### **v1.1** (Próximamente)
 
 - [ ] Chat en tiempo real entre participantes
-- [ ] Videollamada integrada
 - [ ] Sistema de calificaciones y reviews
 - [ ] Social login (Google, GitHub)
 - [ ] Sistema de mensajería privada

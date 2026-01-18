@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Code2, Users, Heart, Calendar } from 'lucide-react';
 import { Project, User } from '@/types';
 import { Badge } from '@/components/ui/Badge';
+import { StackBadge, getStackColorHex } from '@/components/shared/StackBadge';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/utils/api';
 
@@ -24,7 +25,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onToggleInter
       try {
         const ownerData = await api.users.getUser(project.ownerId);
         setOwner(ownerData);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error loading project owner:', error);
       } finally {
         setLoading(false);
@@ -85,21 +86,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onToggleInter
   };
 
   // Color variants for cards based on project stack
-  const getStackColor = (stack: string): string => {
-    switch (stack) {
-      case 'Frontend':
-        return '#069a9a'; // Cyan oscuro
-      case 'Backend':
-        return '#ff5da2'; // Rosa magenta
-      case 'Fullstack':
-        return '#a16ee4'; // Lila purple
-      default:
-        return '#069a9a';
-    }
-  };
-
-  const borderColor = getStackColor(project.stack);
   const isOwner = user?.id === project.ownerId;
+  const borderColor = getStackColorHex(project.stack);
 
   return (
     <div 
@@ -188,15 +176,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onToggleInter
 
           {/* Stack Badge */}
           <div className="mb-3 pt-3 border-t border-[#4ad3e5]/20">
-            <span 
-              className="text-xs px-3 py-1.5 rounded border-2 font-bold font-['Source_Code_Pro'] inline-block"
-              style={{
-                borderColor: borderColor,
-                color: borderColor
-              }}
-            >
-              {project.stack}
-            </span>
+            <StackBadge stack={project.stack} size="sm" className="font-bold font-['Source_Code_Pro']" />
           </div>
 
           {/* Owner Info */}
@@ -289,15 +269,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onToggleInter
 
           {/* Stack Badge */}
           <div className="mb-3 pt-3 border-t border-[#4ad3e5]/20">
-            <span 
-              className="text-xs px-3 py-1.5 rounded border-2 font-bold font-['Source_Code_Pro'] inline-block"
-              style={{
-                borderColor: borderColor,
-                color: borderColor
-              }}
-            >
-              {project.stack}
-            </span>
+            <StackBadge stack={project.stack} size="sm" className="font-bold font-['Source_Code_Pro']" />
           </div>
 
           {/* Owner Info */}

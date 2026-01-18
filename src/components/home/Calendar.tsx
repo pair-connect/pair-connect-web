@@ -4,17 +4,18 @@ import {
   ChevronRight,
   Calendar as CalendarIcon,
 } from "lucide-react";
-import { Session } from "@/types";
-import { getProjectById } from "@/data/mockData";
+import { Session, Project } from "@/types";
 
 interface CalendarProps {
   sessions: Session[];
+  projects?: Project[]; // Proyectos para obtener el stack
   onDateSelect?: (date: Date) => void;
   selectedDate?: Date;
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
   sessions,
+  projects = [],
   onDateSelect,
   selectedDate,
 }) => {
@@ -49,7 +50,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
     const stacks = sessionsOnDate
       .map((session) => {
-        const project = getProjectById(session.projectId);
+        const project = projects.find((p) => p.id === session.projectId);
         return project?.stack || "";
       })
       .filter((stack) => stack);

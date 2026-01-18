@@ -50,7 +50,7 @@ export const CreateSession: React.FC = () => {
         }
 
         setProject(data);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Error fetching project:", err);
         navigate("/mis-proyectos");
       } finally {
