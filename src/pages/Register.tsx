@@ -6,12 +6,16 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import Loader from "@/components/shared/Loader";
 import { RegisterData } from "@/types";
+import { AUTH_ENABLED } from "@/data/constants";
+
+const PLACEHOLDER_DISABLED = "Próximamente";
 
 const RegisterPage = () => {
   const { elementRef } = useMousePosition();
   const { register } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const disabled = !AUTH_ENABLED;
   const [formData, setFormData] = useState<RegisterData>({
     name: '',
     username: '',
@@ -47,6 +51,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (disabled) return;
     if (!validate()) return;
 
     setLoading(true);
@@ -135,11 +140,12 @@ const RegisterPage = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Nombre"
+                  placeholder={disabled ? PLACEHOLDER_DISABLED : "Nombre"}
                   label="Nombre"
                   error={errors.name}
-                  required
+                  required={!disabled}
                   autoComplete="name"
+                  disabled={disabled}
                   className="bg-dark-bg border-[#515d53] text-light"
                 />
               </div>
@@ -150,11 +156,12 @@ const RegisterPage = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="Nombre de usuario"
+                  placeholder={disabled ? PLACEHOLDER_DISABLED : "Nombre de usuario"}
                   label="Nombre de usuario"
                   error={errors.username}
-                  required
+                  required={!disabled}
                   autoComplete="username"
+                  disabled={disabled}
                   className="bg-dark-bg border-[#515d53] text-light"
                 />
               </div>
@@ -167,11 +174,12 @@ const RegisterPage = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="cuenta@ejemplo.com"
+                placeholder={disabled ? PLACEHOLDER_DISABLED : "cuenta@ejemplo.com"}
                 label="Correo electrónico"
                 error={errors.email}
-                required
+                required={!disabled}
                 autoComplete="email"
+                disabled={disabled}
                 className="bg-dark-bg border-[#515d53] text-light"
               />
             </div>
@@ -184,11 +192,12 @@ const RegisterPage = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Tu contraseña"
+                  placeholder={disabled ? PLACEHOLDER_DISABLED : "Tu contraseña"}
                   label="Contraseña"
                   error={errors.password}
-                  required
+                  required={!disabled}
                   autoComplete="new-password"
+                  disabled={disabled}
                   className="bg-dark-bg border-[#515d53] text-light"
                 />
               </div>
@@ -199,11 +208,12 @@ const RegisterPage = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Confirma tu contraseña"
+                  placeholder={disabled ? PLACEHOLDER_DISABLED : "Confirma tu contraseña"}
                   label="Confirmar contraseña"
                   error={errors.confirmPassword}
-                  required
+                  required={!disabled}
                   autoComplete="new-password"
+                  disabled={disabled}
                   className="bg-dark-bg border-[#515d53] text-light"
                 />
               </div>
@@ -213,9 +223,9 @@ const RegisterPage = () => {
               type="submit"
               variant="primary"
               className="w-full mt-6"
-              disabled={loading}
+              disabled={loading || disabled}
             >
-              {loading ? 'Enviando...' : 'Crear cuenta'}
+              {disabled ? "Próximamente" : loading ? "Enviando..." : "Crear cuenta"}
             </Button>
 
             <p className="text-center text-sm text-light mt-6">

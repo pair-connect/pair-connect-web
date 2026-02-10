@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Navbar } from "@/components/layout/Navbar";
+import { ConstructionBanner } from "@/components/layout/ConstructionBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Home } from "@/pages/Home";
 import { SessionDetail } from "@/pages/SessionDetail";
@@ -28,6 +29,7 @@ function App() {
           <ScrollToTop />
           <div className="min-h-screen flex flex-col">
             <Navbar />
+            <ConstructionBanner />
             <main className="flex-1">
               <Routes>
                 <Route
