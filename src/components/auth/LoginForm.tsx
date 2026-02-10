@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { AUTH_ENABLED } from '@/data/constants';
 
 interface LoginFormProps {
   handleSubmit: (data: { email: string; password: string }) => Promise<void>;
@@ -13,6 +14,7 @@ const LoginForm = ({ handleSubmit }: LoginFormProps) => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const disabled = !AUTH_ENABLED;
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -41,6 +43,7 @@ const LoginForm = ({ handleSubmit }: LoginFormProps) => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (disabled) return;
     if (!validate()) return;
 
     setIsLoading(true);
@@ -61,11 +64,12 @@ const LoginForm = ({ handleSubmit }: LoginFormProps) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder="cuenta@ejemplo.com"
+          placeholder={disabled ? 'Próximamente' : 'cuenta@ejemplo.com'}
           label="Correo electrónico"
           error={errors.email}
-          required
+          required={!disabled}
           autoComplete="email"
+          disabled={disabled}
           className="bg-dark-bg border-[#515d53] text-light"
         />
       </div>
@@ -76,11 +80,12 @@ const LoginForm = ({ handleSubmit }: LoginFormProps) => {
           name="password"
           value={formData.password}
           onChange={handleChange}
-          placeholder="Tu contraseña"
+          placeholder={disabled ? 'Próximamente' : 'Tu contraseña'}
           label="Contraseña"
           error={errors.password}
-          required
+          required={!disabled}
           autoComplete="current-password"
+          disabled={disabled}
           className="bg-dark-bg border-[#515d53] text-light"
         />
       </div>
@@ -88,11 +93,11 @@ const LoginForm = ({ handleSubmit }: LoginFormProps) => {
       <Button 
         type="submit" 
         className="w-[50%] self-center py-2.5" 
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         variant="primary"
         size="md"
       >
-        {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+        {disabled ? 'Próximamente' : isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
       </Button>
     </form>
   );
