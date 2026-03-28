@@ -6,6 +6,7 @@ import { supabaseAdmin } from "./clients/supabase.ts";
 import { verifyAuth } from "./auth/verifyAuth.ts";
 import { toFrontendProject } from "./adapters/frontend/project.adapter.ts";
 import { registerAuthRoutes } from "./routes/auth.routes.ts";
+import { registerBookmarksRoutes } from "./routes/bookmarks.routes.ts";
 
 const app = new Hono();
 const { supabaseUrl, supabaseServiceKey } = env;
@@ -78,6 +79,7 @@ app.get("/make-server-39ee6a8c/health", (c) => {
 });
 
 registerAuthRoutes(app);
+registerBookmarksRoutes(app);
 
 // ==================== USER ROUTES ====================
 
@@ -1518,89 +1520,6 @@ app.post("/make-server-39ee6a8c/sessions/:id/interested", async (c) => {
   } catch (error: unknown) {
     console.log('Toggle interest error:', error);
     return c.json({ error: 'Internal server error toggling interest' }, 500);
-  }
-});
-
-// ==================== BOOKMARK ROUTES ====================
-
-// Toggle bookmark
-app.post("/make-server-39ee6a8c/bookmarks/toggle", async (c) => {
-  try {
-    const userId = await verifyAuth(c.req.header('Authorization'));
-
-    if (!userId) {
-      return c.json({ error: 'Unauthorized' }, 401);
-    }
-
-    const { sessionId } = await c.req.json();
-
-    if (!sessionId) {
-      return c.json({ error: 'Session ID required' }, 400);
-    }
-
-    // Check if bookmark exists
-    const { data: existing } = await supabaseAdmin
-      .from('user_bookmarks')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('session_id', sessionId)
-      .single();
-
-    if (existing) {
-      // Remove bookmark
-      await supabaseAdmin
-        .from('user_bookmarks')
-        .delete()
-        .eq('user_id', userId)
-        .eq('session_id', sessionId);
-    } else {
-      // Add bookmark
-      await supabaseAdmin
-        .from('user_bookmarks')
-        .insert({ user_id: userId, session_id: sessionId });
-    }
-
-    // Get updated bookmarks
-    const { data: bookmarks } = await supabaseAdmin
-      .from('user_bookmarks')
-      .select('session_id')
-      .eq('user_id', userId);
-
-    return c.json({ 
-      bookmarks: bookmarks?.map(b => b.session_id) || [],
-      isBookmarked: !existing 
-    });
-
-  } catch (error: unknown) {
-    console.log('Toggle bookmark error:', error);
-    return c.json({ error: 'Internal server error toggling bookmark' }, 500);
-  }
-});
-
-// Get user bookmarks
-app.get("/make-server-39ee6a8c/bookmarks", async (c) => {
-  try {
-    const userId = await verifyAuth(c.req.header('Authorization'));
-
-    if (!userId) {
-      return c.json({ error: 'Unauthorized' }, 401);
-    }
-
-    const { data: bookmarks } = await supabaseAdmin
-      .from('user_bookmarks')
-      .select(`
-        session_id,
-        sessions (*)
-      `)
-      .eq('user_id', userId);
-
-    const sessions = bookmarks?.map(b => b.sessions).filter(Boolean) || [];
-
-    return c.json(sessions);
-
-  } catch (error: unknown) {
-    console.log('Get bookmarks error:', error);
-    return c.json({ error: 'Internal server error fetching bookmarks' }, 500);
   }
 });
 
