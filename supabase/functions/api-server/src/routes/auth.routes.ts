@@ -1,4 +1,4 @@
-import type { Hono } from "npm:hono";
+import type { Hono } from "hono";
 import { verifyAuth } from "../auth/verifyAuth.ts";
 import { validateSignupInput } from "../auth/auth.validation.ts";
 import { authService } from "../services/auth.service.ts";
@@ -15,9 +15,10 @@ export const registerAuthRoutes = (app: Hono) => {
       }
       const result = await authService.signup(validated.value!);
       return c.json(result.body, result.status as 200 | 400 | 500);
-    } catch (error: any) {
-      console.log('Signup fatal error:', error.message);
-      return c.json({ error: `Error interno del servidor: ${error.message}` }, 500);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.log('Signup fatal error:', errorMessage);
+      return c.json({ error: `Error interno del servidor: ${errorMessage}` }, 500);
     }
   });
 
@@ -26,8 +27,10 @@ export const registerAuthRoutes = (app: Hono) => {
       const body = await c.req.json();
       const result = await authService.login(body);
       return c.json(result.body, result.status as 200 | 401 | 500);
-    } catch (error: any) {
-      console.log('Login server error:', error.message, error.stack);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      console.log('Login server error:', errorMessage, errorStack);
       return c.json({ error: 'Internal server error during login' }, 500);
     }
   });

@@ -48,8 +48,9 @@ export const verifyAuth = async (authHeader: string | null | undefined): Promise
             }
           }
         }
-      } catch (decodeError: any) {
-        console.log('Token decode fallback failed:', decodeError.message);
+      } catch (decodeError: unknown) {
+        const decodeErrorMessage = decodeError instanceof Error ? decodeError.message : String(decodeError);
+        console.log('Token decode fallback failed:', decodeErrorMessage);
       }
 
       return null;
@@ -57,8 +58,9 @@ export const verifyAuth = async (authHeader: string | null | undefined): Promise
 
     console.log('Auth verified for user:', user.id);
     return user.id;
-  } catch (err: any) {
-    console.log('Exception in verifyAuth:', err.message);
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.log('Exception in verifyAuth:', errorMessage);
     return null;
   }
 };

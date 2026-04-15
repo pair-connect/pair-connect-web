@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "@supabase/supabase-js";
 import { env } from "../config/env.ts";
 
 export const supabaseAdmin = createClient(env.supabaseUrl, env.supabaseServiceKey);

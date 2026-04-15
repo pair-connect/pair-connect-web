@@ -1,4 +1,5 @@
 import { bookmarksQuery } from "../queries/bookmarks.query.ts";
+import type { DbBookmarkRow } from "../types/domain.ts";
 
 type ServiceResult = { status: number; body: Record<string, unknown> | unknown[] };
 
@@ -27,7 +28,7 @@ export const bookmarksService = {
     return {
       status: 200,
       body: {
-        bookmarks: bookmarks?.map((b: any) => b.session_id) || [],
+        bookmarks: (bookmarks as DbBookmarkRow[] | null)?.map((b) => b.session_id) || [],
         isBookmarked: !existing,
       },
     };
@@ -39,7 +40,9 @@ export const bookmarksService = {
     }
 
     const { data: bookmarks } = await bookmarksQuery.findBookmarksWithSessions(userId);
-    const sessions = bookmarks?.map((b: any) => b.sessions).filter(Boolean) || [];
+    const sessions = ((bookmarks as Array<{ sessions: unknown }> | null) || [])
+      .map((b) => b.sessions)
+      .filter(Boolean);
 
     return {
       status: 200,

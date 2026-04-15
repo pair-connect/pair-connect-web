@@ -1,4 +1,4 @@
-import type { Hono } from "npm:hono";
+import type { Hono } from "hono";
 import { verifyAuth } from "../auth/verifyAuth.ts";
 import { bookmarksService } from "../services/bookmarks.service.ts";
 

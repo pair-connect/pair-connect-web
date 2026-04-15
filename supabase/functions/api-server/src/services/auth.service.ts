@@ -1,11 +1,12 @@
 import { env } from "../config/env.ts";
 import { authQuery } from "../queries/auth.query.ts";
+import type { DbBookmarkRow, DbUser } from "../types/domain.ts";
 
 type ServiceResult = { status: number; body: Record<string, unknown> };
 
 const getBookmarksArray = async (userId: string) => {
   const { data: bookmarks } = await authQuery.findBookmarksByUserId(userId);
-  return bookmarks?.map((b: any) => b.session_id) || [];
+  return (bookmarks as DbBookmarkRow[] | null)?.map((b) => b.session_id) || [];
 };
 
 export const authService = {
@@ -49,7 +50,7 @@ export const authService = {
 
     const { data: existingUserInTable } = await authQuery.findUserProfileByEmail(email);
 
-    let userProfile: any;
+    let userProfile: DbUser;
     if (existingUserInTable) {
       await authQuery.deleteUserProfilesByEmail(email);
 
@@ -102,8 +103,9 @@ export const authService = {
       } else {
         console.log('Session creation error: Could not get token after signup');
       }
-    } catch (sessionError: any) {
-      console.log('Session creation error:', sessionError?.message);
+    } catch (sessionError: unknown) {
+      const errorMessage = sessionError instanceof Error ? sessionError.message : String(sessionError);
+      console.log('Session creation error:', errorMessage);
     }
 
     const bookmarks = await getBookmarksArray(authData.user.id);
@@ -151,9 +153,9 @@ export const authService = {
       const errorText = await authResponse.text();
       console.log('Auth error response text:', errorText);
 
-      let errorData: any;
+      let errorData: Record<string, unknown>;
       try {
-        errorData = JSON.parse(errorText);
+        errorData = JSON.parse(errorText) as Record<string, unknown>;
       } catch {
         errorData = { error: errorText || 'Invalid credentials' };
       }
@@ -165,19 +167,26 @@ export const authService = {
         fullError: errorData,
       });
 
-      const errorMessage = errorData.error || errorData.message || errorData.msg || 'Credenciales inválidas';
+      const parsedError =
+        (typeof errorData.error === 'string' && errorData.error) ||
+        (typeof errorData.message === 'string' && errorData.message) ||
+        (typeof errorData.msg === 'string' && errorData.msg) ||
+        'Credenciales inválidas';
       return {
         status: 401,
         body: {
           error:
-            errorMessage.includes('Invalid login credentials') || errorMessage.includes('invalid')
+            parsedError.includes('Invalid login credentials') || parsedError.includes('invalid')
               ? 'Email o contraseña incorrectos. Verifica tus credenciales.'
-              : errorMessage,
+              : parsedError,
         },
       };
     }
 
-    const authData = await authResponse.json();
+    const authData = await authResponse.json() as {
+      user?: { id: string; email?: string; user_metadata?: { username?: string; name?: string } };
+      access_token?: string;
+    };
     console.log('Auth success, user ID:', authData.user?.id);
 
     if (!authData.user || !authData.access_token) {
@@ -228,9 +237,10 @@ export const authService = {
       accessToken: authData.access_token,
     };
 
+    const responseUser = responseData.user as DbUser;
     console.log('Login successful, returning data:', {
-      userId: (responseData.user as any).id,
-      email: (responseData.user as any).email,
+      userId: responseUser.id,
+      email: responseUser.email,
       hasToken: !!responseData.accessToken,
       tokenLength: responseData.accessToken?.length,
     });
