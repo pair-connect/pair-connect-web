@@ -1,3 +1,6 @@
+/** Si es false, los formularios de login/registro se muestran deshabilitados con placeholder "Próximamente". */
+export const AUTH_ENABLED = false;
+
 // Lista de lenguajes disponibles para selección en formularios
 export const availableLanguages = [
   "JavaScript",
